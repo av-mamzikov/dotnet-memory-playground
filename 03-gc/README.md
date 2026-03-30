@@ -34,11 +34,21 @@ dotnet tool install -g dotnet-dump
 ### Запуск основного приложения
 
 ```bash
-cd GcPlayground.Console
+cd GcPlayground.ConsoleApp
 dotnet run
 ```
 
 Выберите нужный сценарий из меню.
+
+### Быстрый мониторинг (в отдельном терминале)
+
+```bash
+# Найти PID ConsoleApp процесса
+Get-Process | Where-Object {$_.ProcessName -like "*ConsoleApp*"} | Select-Object Id, ProcessName
+
+# Начать мониторинг GC метрик
+dotnet-counters monitor --process-id <PID> System.Runtime[gen-0-gc-count,gen-1-gc-count,gen-2-gc-count,alloc-rate,loh-size,time-in-gc]
+```
 
 ## 🎯 Блоки заданий
 
@@ -220,23 +230,26 @@ dotnet run
 
 2. **Запуск консольного приложения**:
    ```bash
-   cd GcPlayground.Console
+   cd GcPlayground.ConsoleApp
    dotnet run
    ```
 
 3. **Параллельный мониторинг** (в отдельном терминале):
    ```bash
-   # Получить PID процесса (Get-Process dotnet в PowerShell)
+   # Получить PID ConsoleApp процесса
+   Get-Process | Where-Object {$_.ProcessName -like "*ConsoleApp*"} | Select-Object Id, ProcessName
+   
+   # Начать мониторинг
    dotnet-counters monitor --process-id <PID> System.Runtime
    ```
 
 4. **Выбор сценария** из меню и наблюдение за метриками
 
-### 🎯 GcPlayground.Console - Основное приложение
+### 🎯 GcPlayground.ConsoleApp - Основное приложение
 
 **Запуск:**
 ```bash
-cd GcPlayground.Console
+cd GcPlayground.ConsoleApp
 dotnet run
 ```
 
@@ -358,11 +371,27 @@ dotnet-counters monitor --process-id <PID> \
 
 **Получение PID процесса:**
 ```bash
-# PowerShell
-Get-Process dotnet | Select-Object Id, ProcessName
+# PowerShell - фильтрация для конкретного приложения
+Get-Process dotnet | Where-Object {$_.MainWindowTitle -like "*ConsoleApp*"} | Select-Object Id, ProcessName, MainWindowTitle
+# Или по имени процесса
+Get-Process | Where-Object {$_.ProcessName -like "*ConsoleApp*"} | Select-Object Id, ProcessName
 
 # Bash/Linux
-ps aux | grep dotnet
+ps aux | grep -i consoleapp
+# Или более точный поиск
+pgrep -f "GcPlayground.ConsoleApp"
+```
+
+**Если много dotnet процессов:**
+```powershell
+# Показать все dotnet процессы с деталями
+Get-Process dotnet | Format-Table Id, ProcessName, StartTime, CPU, MainWindowTitle -AutoSize
+
+# Найти свежезапущенный ConsoleApp (сортировка по времени запуска)
+Get-Process dotnet | Sort-Object StartTime -Descending | Select-Object -First 3 | Format-Table Id, ProcessName, StartTime, MainWindowTitle
+
+# Фильтр по названию окна (если консольное приложение имеет заголовок)
+Get-Process dotnet | Where-Object {$_.MainWindowTitle -match "Console|GcPlayground"} | Select-Object Id, ProcessName, MainWindowTitle
 ```
 
 **Ключевые метрики и их значения:**
@@ -454,10 +483,11 @@ sos DumpHeap -stat      # Статистика кучи
 1. **Подготовка:**
    ```bash
    # Терминал 1: Запуск приложения
-   cd GcPlayground.Console
+   cd GcPlayground.ConsoleApp
    dotnet run
    
-   # Терминал 2: Мониторинг
+   # Терминал 2: Поиск процесса и мониторинг
+   Get-Process | Where-Object {$_.ProcessName -like "*ConsoleApp*"} | Select-Object Id, ProcessName
    dotnet-counters monitor --process-id <PID> System.Runtime
    ```
 
