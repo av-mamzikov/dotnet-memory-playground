@@ -31,33 +31,44 @@ namespace GcPlayground.ConsoleApp.Scenarios
         /// </summary>
         public static void RunGen0Test()
         {
+            var initialCollectionCount = GC.CollectionCount(0);
+            var size = 1000;
             Console.WriteLine("=== Gen0 Allocations Test ===");
-            Console.WriteLine("Press any key to start...");
-            Console.ReadKey();
-
-            var sw = System.Diagnostics.Stopwatch.StartNew();
+            Console.Write($"Size (default {size}): ");
+            if (int.TryParse(Console.ReadLine()!, out var newsize))
+                size = newsize;
+            Console.WriteLine($"Using size {size}");
             int iterations = 0;
+
+            var sw = Stopwatch.StartNew();
 
             while (true)
             {
                 // Создаем временный объект (1KB), который сразу становится мусором
-                var arr = new byte[1000];
+                var arr = new byte[size];
                 iterations++;
 
-                // Каждые 10000 итераций выводим статистику
-                if (iterations % 10000 == 0)
+                if (sw.Elapsed.TotalSeconds >= 5)
                 {
                     sw.Stop();
+                    var totalSize = size * iterations;
+                    var gen0Collects = GC.CollectionCount(0) - initialCollectionCount;
                     // GC.CollectionCount(generation) - количество сборок для поколения
                     // GC.GetTotalMemory(false) - общий объем памяти (без принудительной сборки)
-                    Console.WriteLine($"Iterations: {iterations}, Time: {sw.ElapsedMilliseconds}ms, " +
-                        $"Gen0: {GC.CollectionCount(0)}, Gen1: {GC.CollectionCount(1)}, Gen2: {GC.CollectionCount(2)}, " +
+                    Console.WriteLine(
+                        $"Iterations: {iterations}, TotlSize: {totalSize}, Time: {sw.ElapsedMilliseconds}ms, " +
+                        $"Gen0: {gen0Collects} (each {(gen0Collects == 0 ? -1 : (totalSize/gen0Collects))} byte), Gen1: {GC.CollectionCount(1)}, Gen2: {GC.CollectionCount(2)}, " +
                         $"Memory: {GC.GetTotalMemory(false) / 1024 / 1024}MB");
                     sw.Restart();
                 }
 
                 // Небольшая задержка для снижения нагрузки на CPU
                 Thread.Sleep(1);
+                if (Console.KeyAvailable)
+                {
+                    Console.ReadKey(true);
+                    break;
+                }
             }
         }
 
@@ -93,8 +104,8 @@ namespace GcPlayground.ConsoleApp.Scenarios
                 {
                     // Объекты в list переживают сборки Gen0 и повышаются в Gen1, затем Gen2
                     Console.WriteLine($"Objects held: {list.Count}, " +
-                        $"Gen0: {GC.CollectionCount(0)}, Gen1: {GC.CollectionCount(1)}, Gen2: {GC.CollectionCount(2)}, " +
-                        $"Memory: {GC.GetTotalMemory(false) / 1024 / 1024}MB");
+                                      $"Gen0: {GC.CollectionCount(0)}, Gen1: {GC.CollectionCount(1)}, Gen2: {GC.CollectionCount(2)}, " +
+                                      $"Memory: {GC.GetTotalMemory(false) / 1024 / 1024}MB");
                 }
 
                 Thread.Sleep(1);
@@ -136,8 +147,8 @@ namespace GcPlayground.ConsoleApp.Scenarios
                 {
                     // Наблюдаем как память растет, а GC не может ничего сделать
                     Console.WriteLine($"Cache size: {cache.Count}, " +
-                        $"Gen0: {GC.CollectionCount(0)}, Gen1: {GC.CollectionCount(1)}, Gen2: {GC.CollectionCount(2)}, " +
-                        $"Memory: {GC.GetTotalMemory(false) / 1024 / 1024}MB");
+                                      $"Gen0: {GC.CollectionCount(0)}, Gen1: {GC.CollectionCount(1)}, Gen2: {GC.CollectionCount(2)}, " +
+                                      $"Memory: {GC.GetTotalMemory(false) / 1024 / 1024}MB");
                 }
             }
         }

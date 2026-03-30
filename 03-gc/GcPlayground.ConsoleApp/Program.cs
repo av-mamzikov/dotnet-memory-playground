@@ -29,55 +29,55 @@ class Program
 {
     static void Main()
     {
+        // Очищаем экран перед выводом меню
+        Console.Clear();
+
+        // Выводим красивый заголовок
+        Console.WriteLine("╔════════════════════════════════════════╗");
+        Console.WriteLine("║       GC Playground - Main Menu        ║");
+        Console.WriteLine("╚════════════════════════════════════════╝");
+        Console.WriteLine();
+
+        // Block 1: Поколения объектов и время жизни
+        Console.WriteLine("Block 1: Generations and Object Lifetime");
+        Console.WriteLine("  1. Gen0 Allocations Test");
+        Console.WriteLine("  2. Object Promotion Test");
+        Console.WriteLine("  3. Memory Leak Simulation");
+        Console.WriteLine();
+
+        // Block 2: Large Object Heap и фрагментация
+        Console.WriteLine("Block 2: LOH and Fragmentation");
+        Console.WriteLine("  4. LOH Allocations Test");
+        Console.WriteLine("  5. LOH Fragmentation Test");
+        Console.WriteLine("  6. LOH Compaction Test");
+        Console.WriteLine();
+
+        // Block 3: Паузы и влияние на latency
+        Console.WriteLine("Block 3: Pauses and Stop-the-world");
+        Console.WriteLine("  7. Latency Test");
+        Console.WriteLine("  8. Server vs Workstation GC Test");
+        Console.WriteLine();
+
+        // Block 4: Card Table механизм
+        Console.WriteLine("Block 4: Card Table");
+        Console.WriteLine("  9. CardTable Simple Test");
+        Console.WriteLine("  10. CardTable Stress Test");
+        Console.WriteLine();
+
+        // Block 5: Pinning объектов
+        Console.WriteLine("Block 5: Pinning");
+        Console.WriteLine("  11. Fixed Pinning Test");
+        Console.WriteLine("  12. GCHandle Pinning Test");
+        Console.WriteLine();
+
+        // Опция выхода
+        Console.WriteLine("  0. Exit");
+        Console.WriteLine();
+        
         // Основной цикл приложения - показываем меню, пока пользователь не выберет выход
         while (true)
         {
-            // Очищаем экран перед выводом меню
-            Console.Clear();
-            
-            // Выводим красивый заголовок
-            Console.WriteLine("╔════════════════════════════════════════╗");
-            Console.WriteLine("║       GC Playground - Main Menu        ║");
-            Console.WriteLine("╚════════════════════════════════════════╝");
-            Console.WriteLine();
-            
-            // Block 1: Поколения объектов и время жизни
-            Console.WriteLine("Block 1: Generations and Object Lifetime");
-            Console.WriteLine("  1. Gen0 Allocations Test");
-            Console.WriteLine("  2. Object Promotion Test");
-            Console.WriteLine("  3. Memory Leak Simulation");
-            Console.WriteLine();
-            
-            // Block 2: Large Object Heap и фрагментация
-            Console.WriteLine("Block 2: LOH and Fragmentation");
-            Console.WriteLine("  4. LOH Allocations Test");
-            Console.WriteLine("  5. LOH Fragmentation Test");
-            Console.WriteLine("  6. LOH Compaction Test");
-            Console.WriteLine();
-            
-            // Block 3: Паузы и влияние на latency
-            Console.WriteLine("Block 3: Pauses and Stop-the-world");
-            Console.WriteLine("  7. Latency Test");
-            Console.WriteLine("  8. Server vs Workstation GC Test");
-            Console.WriteLine();
-            
-            // Block 4: Card Table механизм
-            Console.WriteLine("Block 4: Card Table");
-            Console.WriteLine("  9. CardTable Simple Test");
-            Console.WriteLine("  10. CardTable Stress Test");
-            Console.WriteLine();
-            
-            // Block 5: Pinning объектов
-            Console.WriteLine("Block 5: Pinning");
-            Console.WriteLine("  11. Fixed Pinning Test");
-            Console.WriteLine("  12. GCHandle Pinning Test");
-            Console.WriteLine();
-            
-            // Опция выхода
-            Console.WriteLine("  0. Exit");
-            Console.WriteLine();
             Console.Write("Select option: ");
-
             // Читаем выбор пользователя
             var choice = Console.ReadLine();
 
@@ -96,7 +96,7 @@ class Program
                     case "3":
                         GenerationsScenario.RunMemoryLeakTest();
                         break;
-                    
+
                     // Block 2: LOH
                     case "4":
                         LohScenario.RunLohAllocationTest();
@@ -107,7 +107,7 @@ class Program
                     case "6":
                         LohScenario.RunLohCompactionTest();
                         break;
-                    
+
                     // Block 3: Latency
                     case "7":
                         LatencyScenario.RunLatencyTest();
@@ -115,7 +115,7 @@ class Program
                     case "8":
                         LatencyScenario.RunServerVsWorkstationTest();
                         break;
-                    
+
                     // Block 4: Card Table
                     case "9":
                         CardTableScenario.RunCardTableSimpleTest();
@@ -123,7 +123,7 @@ class Program
                     case "10":
                         CardTableScenario.RunCardTableStressTest();
                         break;
-                    
+
                     // Block 5: Pinning
                     case "11":
                         PinningScenario.RunFixedPinningTest();
@@ -131,11 +131,11 @@ class Program
                     case "12":
                         PinningScenario.RunGcHandlePinningTest();
                         break;
-                    
+
                     // Выход из приложения
                     case "0":
                         return;
-                    
+
                     // Неверный выбор
                     default:
                         Console.WriteLine("Invalid option. Press any key to continue...");
